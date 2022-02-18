@@ -54,22 +54,8 @@ def dca(data, outcome, predictors,
     net_benefit, interventions_avoided = \
         initialize_result_dataframes(event_rate, thresh_lo, thresh_hi, thresh_step)
     for i, predictor in enumerate(predictors):  # for each predictor
-        net_benefit[predictor] = np.nan  # initialize new column of net_benefits
-
-        for j in range(0, len(net_benefit['threshold'])):  # for each threshold value
-            #calculate true/false positives
-            true_positives, false_positives = \
-                calc_tf_positives(data, outcome, predictor,
-                                  net_benefit['threshold'], j)
-
-            #calculate net benefit
-            net_benefit_value = \
-                calculate_net_benefit(j, net_benefit['threshold'], harms[i],
-                                      true_positives, false_positives,
-                                      num_observations)
-            #net_benefit.set_value(j, predictor, net_benefit_value)
-            net_benefit.iloc[j][predictor] = net_benefit_value
-
+        net_benefit[predictor] = calculate_net_benefit(data, outcome, predictor, net_benefit['threshold'], harm=harms[i])
+       
         #calculate interventions_avoided for the predictor
         interventions_avoided[predictor] = calculate_interventions_avoided(
             predictor, net_benefit, intervention_per,
