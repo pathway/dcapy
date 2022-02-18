@@ -53,20 +53,9 @@ def calc_tf_positives(data, outcome, predictor, net_benefit_threshold, j):
     tuple(float, float)
         the number of true positives, false positives
     """
-    true_positives = false_positives = 0
-    #create a filter mask
-    filter_mask = data[predictor] >= net_benefit_threshold[j]
-    filter_mask_sum = filter_mask.sum()
-    if filter_mask_sum == 0:
-        pass
-    else:
-        #get all outcomes where the filter_mask is 'True'
-        filtered_outcomes = map(lambda x,y: x if y == True else np.nan,
-                                data[outcome],filter_mask)
-        filtered_outcomes = [outcome for outcome in filtered_outcomes
-                             if outcome is not np.nan]  #drop all NaN values
-        true_positives = mean(filtered_outcomes)*filter_mask_sum
-        false_positives = (1-mean(filtered_outcomes))*filter_mask_sum
+    filter_mask = data[predictor] >=  net_benefit_threshold[j]
+    true_positives = data.loc[filter_mask, outcome].dropna().sum()
+    false_positives = filter_mask.sum() - true_positives
 
     return true_positives, false_positives
 
