@@ -46,6 +46,9 @@ def dca(data, outcome, predictors,
     #calculate useful constants for the net benefit calculation
     num_observations = len(data[outcome])  # number of observations in data set
     event_rate = mean(data[outcome])  # the rate at which the outcome happens
+        
+    if harms is None:
+        harms = [0.0]*len(predictors)
 
     #create DataFrames for holding results
     net_benefit, interventions_avoided = \
@@ -64,7 +67,8 @@ def dca(data, outcome, predictors,
                 calculate_net_benefit(j, net_benefit['threshold'], harms[i],
                                       true_positives, false_positives,
                                       num_observations)
-            net_benefit.set_value(j, predictor, net_benefit_value)
+            #net_benefit.set_value(j, predictor, net_benefit_value)
+            net_benefit.iloc[j][predictor] = net_benefit_value
 
         #calculate interventions_avoided for the predictor
         interventions_avoided[predictor] = calculate_interventions_avoided(
