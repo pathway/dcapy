@@ -21,13 +21,14 @@ def initialize_result_dataframes(event_rate, thresh_lo, thresh_hi, thresh_step):
     #initialize threshold series for each dataFrame
     net_benefit = pd.Series(frange(thresh_lo, thresh_hi+thresh_step, thresh_step),
                             name='threshold')
-    interventions_avoided = pd.DataFrame(net_benefit)
+    interventions_avoided = pd.DataFrame(net_benefit).set_index("threshold")
 
     #construct 'all' and 'none' columns for net_benefit
     net_benefit_all = event_rate - (1-event_rate)*net_benefit/(1-net_benefit)
     net_benefit_all.name = 'all'
     net_benefit = pd.concat([net_benefit, net_benefit_all], axis=1)
     net_benefit['none'] = 0
+    net_benefit = pd.DataFrame(net_benefit).set_index("threshold")
 
     return net_benefit, interventions_avoided
 
@@ -53,7 +54,7 @@ def calc_tf_positives(data, outcome, predictor, net_benefit_threshold, j):
     tuple(float, float)
         the number of true positives, false positives
     """
-    filter_mask = data[predictor] >=  net_benefit_threshold[j]
+    filter_mask = data[predictor] >= net_benefit_threshold[j]
     true_positives = data.loc[filter_mask, outcome].dropna().sum()
     false_positives = filter_mask.sum() - true_positives
 
@@ -169,9 +170,9 @@ def lowess_smooth_results(predictor, net_benefit, interventions_avoided,
     smoothed_interv = lowess(interventions_avoided[predictor],
                              interventions_avoided.index.values,
                              frac=lowess_frac, missing='drop')
-    return pd.Series(smoothed_net_benefit, index=net_benefit['threshold'],
+    return pd.Series(smoothed_net_benefit[:, -1], index=net_benefit.index.values,
                      name='{}_sm'.format(predictor)), pd.Series(
-                         smoothed_interv, index=interventions_avoided['threshold'],
+                         smoothed_interv[:, -1], index=interventions_avoided.index.values,
                          name='{}_sm'.format(predictor))
 
 
