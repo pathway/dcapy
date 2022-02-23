@@ -169,9 +169,9 @@ def lowess_smooth_results(predictor, net_benefit, interventions_avoided,
     smoothed_interv = lowess(interventions_avoided[predictor],
                              interventions_avoided.index.values,
                              frac=lowess_frac, missing='drop')
-    return pd.Series(smooth_net_benefit, index=net_benefit['threshold'],
+    return pd.Series(smoothed_net_benefit, index=net_benefit['threshold'],
                      name='{}_sm'.format(predictor)), pd.Series(
-                         smooth_interv, index=interventions_avoided['threshold'],
+                         smoothed_interv, index=interventions_avoided['threshold'],
                          name='{}_sm'.format(predictor))
 
 
