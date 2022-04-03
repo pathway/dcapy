@@ -1,8 +1,6 @@
 dcapy
 ---
 
-DEPRECATED: you probably shouldn't use this. the code is useful, but I'm not working on it anymore. 
-
 A Python library for Decision Curve Analysis
 
 ## Decision Curve Analysis
